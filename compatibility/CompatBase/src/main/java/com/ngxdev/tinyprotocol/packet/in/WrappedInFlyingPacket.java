@@ -20,11 +20,12 @@ public class WrappedInFlyingPacket extends Packet {
     private static FieldAccessor<Double> fieldZ = Reflection.getFieldSafe(packet, double.class, 2);
     private static FieldAccessor<Float> fieldYaw = Reflection.getFieldSafe(packet, float.class, 0);
     private static FieldAccessor<Float> fieldPitch = Reflection.getFieldSafe(packet, float.class, 1);
+    private static FieldAccessor<Boolean> fieldGround = Reflection.getFieldSafe(packet, boolean.class, 0);
 
     // Decoded data
     private double x, y, z;
     private float yaw, pitch;
-    private boolean look, pos;
+    private boolean look, pos, ground;
 
     public WrappedInFlyingPacket(Object packet) {
         super(packet);
@@ -41,10 +42,11 @@ public class WrappedInFlyingPacket extends Packet {
             pos = name.equals(Client.POSITION) || name.equals(Client.POSITION_LOOK);
             look = name.equals(Client.LOOK) || name.equals(Client.POSITION_LOOK);
         }
-        x = fieldX.get(getPacket());
-        y = fieldY.get(getPacket());
-        z = fieldZ.get(getPacket());
-        yaw = fieldYaw.get(getPacket());
-        pitch = fieldPitch.get(getPacket());
+        x = fetch(fieldX);
+        y = fetch(fieldY);
+        z = fetch(fieldZ);
+        yaw = fetch(fieldYaw);
+        pitch = fetch(fieldPitch);
+        ground = fetch(fieldGround);
     }
 }

@@ -4,6 +4,7 @@
 
 package com.ngxdev.tinyprotocol.api;
 
+import com.ngxdev.tinyprotocol.reflection.FieldAccessor;
 import com.ngxdev.tinyprotocol.reflection.Reflection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -109,5 +110,9 @@ public abstract class Packet {
 
     public void setPacket(String packet, Object... args) {
         this.packet = construct(packet, args);
+    }
+
+    public <T> T fetch(FieldAccessor<T> field) {
+        return field.get(packet);
     }
 }

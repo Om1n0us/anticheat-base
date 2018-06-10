@@ -12,6 +12,10 @@ public class BasePlugin extends JavaPlugin {
     private static String prefix = "§7[§fAntiCheat§7]";
     private static BasePlugin instance;
 
+    public static BasePlugin getInstance() {
+        return instance;
+    }
+
     public BasePlugin() {
         instance = this;
     }

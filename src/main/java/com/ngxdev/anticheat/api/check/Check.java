@@ -12,6 +12,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Getter
 public class Check {
     private CheckType type;
@@ -23,6 +28,27 @@ public class Check {
     private int defaultViolations;
     private int defaultViolationTimeout;
 
+    private List<Method> pre = new ArrayList<>();
+    private List<Method> post = new ArrayList<>();
+
+    public Check() {
+        //TODO popular pre and post
+    }
+
+    public void call(Object argument) {
+        Arrays.asList(pre, post).forEach(l -> {
+            l.forEach(m -> {
+                if (m.getParameterTypes()[0] == argument.getClass()) {
+                    try {
+                        m.invoke(this, argument);
+                    } catch (Exception e) {
+                        e.printStackTrace(); // todo some kind of exception logging to prevent spam
+                    }
+                }
+            });
+        });
+    }
+
     /**
      * @param extra - Extra debug data, or values, like reach value
      * @param args - Formatter args, "%s there" with arg "hello" will return "hello there"
@@ -31,6 +57,13 @@ public class Check {
         if (data.debug.check == this) {
             player.sendMessage(BasePlugin.getPrefix() + " §f" + type.name() + " §7=> §f" + String.format(extra, args));
         }
+    }
+
+    /**
+     * @return if the player should be cancelled, pushed back, etc.
+     * */
+    public boolean fail() {
+        return fail(defaultViolations, defaultViolationTimeout, null);
     }
 
     /**

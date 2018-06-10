@@ -4,11 +4,17 @@
 
 package com.ngxdev.anticheat.handler;
 
+import com.ngxdev.anticheat.data.PlayerData;
 import com.ngxdev.tinyprotocol.api.AbstractTinyProtocol;
+import com.ngxdev.tinyprotocol.api.Packet;
 import com.ngxdev.tinyprotocol.api.ProtocolVersion;
+import com.ngxdev.tinyprotocol.packet.in.WrappedInFlyingPacket;
+import com.ngxdev.utils.Init;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+@Init
 public class TinyProtocolHandler {
     private static AbstractTinyProtocol instance;
 
@@ -48,7 +54,28 @@ public class TinyProtocolHandler {
     }
 
     public Object onPacketInAsync(Player sender, Object packet) {
+        String name = packet.getClass().getName();
+        int index = name.lastIndexOf(".");
+        String packetName = name.substring(index + 1);
+        try {
+            PlayerData data = PlayerData.get(sender);
 
+            switch (packetName) {
+                case Packet.Client.POSITION:
+                case Packet.Client.LOOK:
+                case Packet.Client.POSITION_LOOK:
+                case Packet.Client.LEGACY_POSITION:
+                case Packet.Client.LEGACY_LOOK:
+                case Packet.Client.LEGACY_POSITION_LOOK:
+                case Packet.Client.FLYING: {
+                    WrappedInFlyingPacket wrapped = new WrappedInFlyingPacket(packet);
+                    data.fireChecks(wrapped);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO Add some sort of exception tracker to avoid printing the same error more than once.
+        }
         return packet;
     }
 }
