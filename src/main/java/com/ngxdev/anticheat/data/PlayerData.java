@@ -23,14 +23,14 @@ public class PlayerData {
     public int currentTick = 0;
     public List<Check> checks = new ArrayList<>();
 
-    public class _velocity {
+    public class Velocity {
         public double fx, fy, fz; // Last location
         public double tx, ty, tz; // Current location
         public double deltaH;
         public double deltaV;
     }
 
-    public class _movement {
+    public class Movement {
         public double fx, fy, fz; // Last location
         public double tx, ty, tz; // Current location
         public double deltaH;
@@ -39,22 +39,22 @@ public class PlayerData {
         public boolean hasJumped, inAir;
     }
 
-    public class _timers {
+    public class Timers {
         public PlayerTimer lastJump;
     }
 
-    public class _debug {
+    public class Debug {
         public Check check;
     }
 
 
     // Ugly I know, these get automatically initialized
-    public _velocity velocity;
-    public _movement movement;
-    public _timers timers;
-    public _debug debug;
+    public Velocity velocity;
+    public Movement movement;
+    public Timers timers;
+    public Debug debug;
 
-    // ------------------------------------------------ //
+    // Ease of use stuff
     public static final Map<Player, PlayerData> playerData = new ConcurrentHashMap<>();
 
     public static PlayerData get(Player player) {

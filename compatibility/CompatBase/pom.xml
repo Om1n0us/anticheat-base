@@ -47,11 +47,6 @@
         </dependency>
         <dependency>
             <groupId>com.ngxdev</groupId>
-            <artifactId>CompatBase</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ngxdev</groupId>
             <artifactId>utils</artifactId>
             <version>1.0</version>
         </dependency>

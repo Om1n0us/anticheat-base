@@ -36,7 +36,7 @@ public class TestCheck extends Check {
             data.timers.lastJump.reset();
             data.movement.hasJumped = true;
         }
-    };
+    }
 
     // The actual check
     @Checker
@@ -52,5 +52,5 @@ public class TestCheck extends Check {
         if (data.movement.deltaH > limit) {
             fail("%.2f(%s%%)", data.movement.deltaH, (int) ((limit / data.movement.deltaH) * 100));
         }
-    };
+    }
 }

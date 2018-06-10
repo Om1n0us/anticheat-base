@@ -26,5 +26,5 @@ public class TestCheck3 extends Check {
 
         data.velocity.deltaH = Math.sqrt(Math.pow(data.velocity.tx - data.velocity.fx, 2.0) + Math.pow(data.velocity.tz - data.velocity.fz, 2.0));
         data.velocity.deltaV = Math.abs(data.velocity.fy - data.velocity.ty);
-    };
+    }
 }

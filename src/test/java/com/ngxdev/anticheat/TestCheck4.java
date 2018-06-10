@@ -7,19 +7,18 @@ package com.ngxdev.anticheat;
 import com.ngxdev.anticheat.api.check.Check;
 import com.ngxdev.anticheat.api.check.CheckType;
 import com.ngxdev.anticheat.api.check.Checker;
-import com.ngxdev.anticheat.api.check.Parser;
 import com.ngxdev.tinyprotocol.packet.in.WrappedInFlyingPacket;
 
-// Showcasing that values could be used from other checks
-@CheckType(id = "check:test2", name = "Test Check2")
-public class TestCheck2 extends Check {
+// Showcasing that values could be stored in checks
+@CheckType(id = "check:test4", name = "Test Check4")
+public class TestCheck4 extends Check {
+    private int counter;
+
     // The actual check
     @Checker
     void movementChecker(WrappedInFlyingPacket packet) {
-        if (!packet.isPos()) return;
-
-        if (data.movement.deltaH > 4) {
-            fail("Sonic The Hedgehog");
+        if (counter++ == 100) {
+            fail("You sent 100 movement packets!");
         }
     }
 }
