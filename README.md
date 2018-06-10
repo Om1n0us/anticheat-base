@@ -4,7 +4,7 @@
 This project was made for people that want to make an anticheat, but don't know where to start or how to make an efficient base plugin.
 
 # Compiling #
-Any IDE, `mvn clan install`, you could also build it manually, maven is only required for the dependencies.
+Any IDE, `mvn clean install`, you could also build it manually, maven is only required for the dependencies.
 
 # Editing #
 Lombok plugin is required.
