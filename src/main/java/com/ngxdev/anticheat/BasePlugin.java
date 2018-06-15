@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class BasePlugin extends JavaPlugin {
     @Getter
-    private static String prefix = "§7[§fAntiCheat§7]";
+    private static String prefix = "§fAntiCheat §8//";
     private static BasePlugin instance;
 
     public static BasePlugin getInstance() {

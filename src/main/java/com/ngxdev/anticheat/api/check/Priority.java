@@ -11,5 +11,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Parser {
+public @interface Priority {
+    byte value() default Byte.MAX_VALUE;
 }

@@ -37,6 +37,7 @@ public class BukkitHandler implements Listener {
                 ex.printStackTrace();
             }
         }
+        CheckHandler.init(data);
     }
 
     @EventHandler

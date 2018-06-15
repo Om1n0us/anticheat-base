@@ -140,7 +140,8 @@ public class ClassScanner {
         if (classNode.visibleAnnotations != null) {
             for (Object node : classNode.visibleAnnotations) {
                 AnnotationNode annotation = (AnnotationNode) node;
-                if (annotation.desc.equals("L" + Init.class.getName().replace(".", "/") + ";")) return className;
+                if (annotation.desc.equals("L" + Init.class.getName().replace(".", "/") + ";")
+                        || annotation.desc.equals("L" + file.replace(".", "/") + ";")) return className;
             }
         }
         if (classNode.superName != null && (classNode.superName.equals(file))) return className;

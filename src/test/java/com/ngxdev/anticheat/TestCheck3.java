@@ -5,17 +5,15 @@
 package com.ngxdev.anticheat;
 
 import com.ngxdev.anticheat.api.check.Check;
-import com.ngxdev.anticheat.api.check.CheckType;
-import com.ngxdev.anticheat.api.check.Checker;
-import com.ngxdev.anticheat.api.check.NoOpCheck;
-import com.ngxdev.tinyprotocol.packet.in.WrappedInFlyingPacket;
+import com.ngxdev.anticheat.api.check.Priority;
+import com.ngxdev.anticheat.api.check.type.NoOpCheck;
 import com.ngxdev.tinyprotocol.packet.in.WrappedInVelocityPacket;
 
 // Used only for parsing
 @NoOpCheck
 public class TestCheck3 extends Check {
-    // The actual check
-    @Checker
+    // Parser
+    @Priority(0)
     void movementChecker(WrappedInVelocityPacket packet) {
         data.velocity.fx = data.velocity.tx;
         data.velocity.fy = data.velocity.ty;

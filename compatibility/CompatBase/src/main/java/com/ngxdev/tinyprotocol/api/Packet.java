@@ -17,6 +17,8 @@ import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public abstract class Packet {
     public static class Type {
         public static final String WATCHABLE_OBJECT = (Reflection.VERSION.startsWith("v1_7") || Reflection.VERSION.startsWith("v1_8_R1")) ? "WatchableObject" : "DataWatcher$WatchableObject";
@@ -97,9 +99,9 @@ public abstract class Packet {
         return null;
     }
 
-    @Getter
-    @Setter
+
     private Object packet;
+    private boolean cancelled;
 
     public String getPacketName() {
         String name = packet.getClass().getName();

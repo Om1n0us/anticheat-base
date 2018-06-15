@@ -2,7 +2,7 @@
  * Copyright (c) 2018 NGXDEV.COM. Licensed under MIT.
  */
 
-package com.ngxdev.anticheat.api.check;
+package com.ngxdev.anticheat.api.check.type;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -2,7 +2,7 @@
  * Copyright (c) 2018 NGXDEV.COM. Licensed under MIT.
  */
 
-package com.ngxdev.profiler;
+package com.ngxdev.utils.profiler;
 
 import java.util.HashMap;
 import java.util.Map;

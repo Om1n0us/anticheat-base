@@ -10,6 +10,7 @@ import com.ngxdev.tinyprotocol.api.Packet;
 import com.ngxdev.tinyprotocol.api.ProtocolVersion;
 import com.ngxdev.tinyprotocol.packet.in.WrappedInFlyingPacket;
 import com.ngxdev.utils.Init;
+import com.ngxdev.utils.exception.ExceptionLog;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -21,6 +22,10 @@ public class TinyProtocolHandler {
     // Purely for making the code cleaner
     public static void sendPacket(Player player, Object packet) {
         instance.sendPacket(player, packet);
+    }
+
+    public static int getProtocolVersion(Player player) {
+        return instance.getProtocolVersion(player);
     }
 
     public TinyProtocolHandler(Plugin plugin) {
@@ -49,11 +54,26 @@ public class TinyProtocolHandler {
     }
 
     public Object onPacketOutAsync(Player receiver, Object packet) {
+        boolean cancel = false;
+        String name = packet.getClass().getName();
+        int index = name.lastIndexOf(".");
+        String packetName = name.substring(index + 1);
+        try {
+            PlayerData data = PlayerData.get(receiver);
 
-        return packet;
+            switch (packetName) {
+                default: {
+
+                }
+            }
+        } catch (Exception e) {
+            ExceptionLog.log(e);
+        }
+        return cancel ? null : packet;
     }
 
     public Object onPacketInAsync(Player sender, Object packet) {
+        boolean cancel = false;
         String name = packet.getClass().getName();
         int index = name.lastIndexOf(".");
         String packetName = name.substring(index + 1);
@@ -69,13 +89,14 @@ public class TinyProtocolHandler {
                 case Packet.Client.LEGACY_POSITION_LOOK:
                 case Packet.Client.FLYING: {
                     WrappedInFlyingPacket wrapped = new WrappedInFlyingPacket(packet);
+                    wrapped.process(data.protocolVersion);
                     data.fireChecks(wrapped);
+                    cancel = wrapped.isCancelled();
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            // TODO Add some sort of exception tracker to avoid printing the same error more than once.
+            ExceptionLog.log(e);
         }
-        return packet;
+        return cancel ? null : packet;
     }
 }

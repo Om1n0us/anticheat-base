@@ -5,7 +5,9 @@
 package com.ngxdev.anticheat.data;
 
 import com.ngxdev.anticheat.api.check.Check;
+import com.ngxdev.anticheat.handler.TinyProtocolHandler;
 import com.ngxdev.anticheat.utils.PlayerTimer;
+import com.ngxdev.tinyprotocol.api.ProtocolVersion;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
@@ -17,11 +19,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 // Note, the only reason these don't have getters and setters to make the code cleaner in checks
-@RequiredArgsConstructor
 public class PlayerData {
     @NonNull public Player player;
     public int currentTick = 0;
     public List<Check> checks = new ArrayList<>();
+    public ProtocolVersion protocolVersion;
+
+    public PlayerData(Player player) {
+        this.player = player;
+        protocolVersion = ProtocolVersion.getVersion(TinyProtocolHandler.getProtocolVersion(player));
+    }
 
     public class Velocity {
         public double fx, fy, fz; // Last location
@@ -39,18 +46,27 @@ public class PlayerData {
         public boolean hasJumped, inAir;
     }
 
+    public class Enviorment {
+        public PlayerTimer
+                onGround,
+                onStairs, onSlabs,
+                inWater, inLava, inWeb;
+    }
+
     public class Timers {
         public PlayerTimer lastJump;
     }
 
     public class Debug {
         public Check check;
+        public boolean debugMode;
     }
 
 
     // Ugly I know, these get automatically initialized
     public Velocity velocity;
     public Movement movement;
+    public Enviorment enviorment;
     public Timers timers;
     public Debug debug;
 

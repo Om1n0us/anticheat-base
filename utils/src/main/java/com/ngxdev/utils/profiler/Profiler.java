@@ -2,7 +2,7 @@
  * Copyright (c) 2018 NGXDEV.COM. Licensed under MIT.
  */
 
-package com.ngxdev.profiler;
+package com.ngxdev.utils.profiler;
 
 public interface Profiler {
     void start(String name);

@@ -5,6 +5,7 @@
 package com.ngxdev.anticheat;
 
 import com.ngxdev.anticheat.api.check.*;
+import com.ngxdev.anticheat.api.check.type.CheckType;
 import com.ngxdev.tinyprotocol.packet.in.WrappedInFlyingPacket;
 
 // Speed check, does not account for being on ice, slabs, blocks above, velocity, etc.
@@ -14,7 +15,7 @@ public class TestCheck extends Check {
     // Parsing the flying packet into data
     // Parsers ALWAYS run before checker methods
     // These can be put in seperate classes, doesn't really matter, use @NoOpCheck for that.
-    @Parser
+    @Priority(0)
     void movementParser(WrappedInFlyingPacket packet) {
         if (!packet.isPos()) return;
         data.currentTick++;
@@ -39,7 +40,6 @@ public class TestCheck extends Check {
     }
 
     // The actual check
-    @Checker
     void movementChecker(WrappedInFlyingPacket packet) {
         if (!packet.isPos()) return;
         double limit = 0.3;
