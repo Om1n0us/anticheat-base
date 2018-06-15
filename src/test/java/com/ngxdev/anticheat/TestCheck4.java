@@ -13,7 +13,7 @@ import com.ngxdev.tinyprotocol.packet.in.WrappedInFlyingPacket;
 @CheckType(id = "check:test4", name = "Test Check4")
 public class TestCheck4 extends Check {
     @Setting
-    private int packetCount = 100;
+    private static int packetCount = 100;
 
     private int counter;
 

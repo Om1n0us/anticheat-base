@@ -4,7 +4,6 @@
 
 package com.ngxdev.anticheat.api.check;
 
-import com.google.common.collect.Maps;
 import com.ngxdev.anticheat.BasePlugin;
 import com.ngxdev.anticheat.api.check.type.CheckType;
 import com.ngxdev.anticheat.containers.ViolationData;
@@ -21,24 +20,17 @@ import java.util.*;
 
 @Getter
 public class Check {
-    // Configurable values
-    @Setting
-    private double alertSensitivity = 1;
-    @Setting
-    private double cancelSensitivity = 1;
-    @Setting
-    private double banSensitivity = 1;
+    // Static values
+    private String id, name;
+    private boolean experimental;
 
-    private CheckType type;
+    // Configurable values
+    private CheckWrapper check;
+
     @Setter
     private Player player;
     // To make the code cleaner
     public PlayerData data;
-
-    @Setter
-    private int defaultViolations;
-    @Setter
-    private int defaultViolationTimeout;
 
     // Handles how violations work, feel free to modify this
     private ViolationData violationData;
@@ -59,15 +51,20 @@ public class Check {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .forEach(entry -> methods.add(entry.getKey()));
         if (getClass().isAssignableFrom(CheckType.class)) {
-            type = getClass().getAnnotation(CheckType.class);
-            defaultViolations = type.maxVl();
-            defaultViolationTimeout = type.timeout();
+            CheckType type = getClass().getAnnotation(CheckType.class);
+            this.id = type.id();
+            this.name = type.name();
+            this.experimental = type.experimental();
+            if (isExperimental()) this.name = name + "*";
         }
     }
 
-    public void init(PlayerData data) {
+    // Just so we don't have to use reflection & private feels are kept hidden.
+    public void init(PlayerData data, CheckWrapper wrapper) {
         this.player = data.player;
         this.data = data;
+        this.check = wrapper;
+        this.violationData = new ViolationData(data);
     }
 
     public void call(Object argument) {
@@ -88,7 +85,7 @@ public class Check {
      */
     public void debug(String extra, Object... args) {
         if (data.debug.check == this) {
-            player.sendMessage(BasePlugin.getPrefix() + " §f" + type.name() + " §8/ §f" + String.format(extra, args));
+            player.sendMessage(BasePlugin.getPrefix() + " §f" + name + " §8/ §f" + String.format(extra, args));
         }
     }
 
@@ -96,14 +93,14 @@ public class Check {
      * @return if the player should be cancelled, pushed back, etc.
      */
     public boolean fail() {
-        return fail(defaultViolations, defaultViolationTimeout, null);
+        return fail(check.defaultViolations(), check.defaultViolationTimeout(), null);
     }
 
     /**
      * @return if the player should be cancelled, pushed back, etc.
      */
     public boolean fail(String extra, Object... args) {
-        return fail(defaultViolations, defaultViolationTimeout, extra, args);
+        return fail(check.defaultViolations(), check.defaultViolationTimeout(), extra, args);
     }
 
     /**
@@ -116,9 +113,9 @@ public class Check {
     public boolean fail(int violations, int violationTimeout, String extra, Object... args) {
         double vls = (double) violationData.getViolation(violationTimeout) / (double) violations;
         // Declared as fields for special occasions that would make it not be required to be alerted (generic lag check for example)
-            boolean shouldAlert = type.alert();
-            if (shouldAlert && vls >= alertSensitivity ) {
-                player.sendMessage(BasePlugin.getPrefix() + " §f" + type.name() + " §8/ §f" + String.format(extra, args));
+            boolean shouldAlert = check.alert();
+            if (shouldAlert && vls >= check.alertSensitivity()) {
+                player.sendMessage(BasePlugin.getPrefix() + " §f" + name + " §8/ §f" + String.format(extra, args));
             }
         return false;
     }
