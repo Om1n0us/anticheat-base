@@ -1,1 +1,3 @@
-name: AnticheatBase
+name: BasePlugin
+version: 1
+main: com.ngxdev.anticheat.BasePlugin

@@ -10,6 +10,7 @@ import com.ngxdev.tinyprotocol.reflection.FieldAccessor;
 import com.ngxdev.tinyprotocol.reflection.Reflection;
 import jdk.nashorn.internal.runtime.PropertyMap;
 import lombok.Getter;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -18,9 +19,9 @@ public class WrappedGameProfile extends Packet {
     private static final String type = Type.GAMEPROFILE;
 
     // Fields
-    private static FieldAccessor<UUID> fieldId = Reflection.getFieldSafe(type, UUID.class, 0);
-    private static FieldAccessor<String> fieldName = Reflection.getFieldSafe(type, String.class, 0);
-    private static FieldAccessor<?> fieldPropertyMap = Reflection.getFieldSafe(type, Reflection.getClass(Type.PROPERTYMAP), 0);
+    private static FieldAccessor<UUID> fieldId = fetchField(type, UUID.class, 0);
+    private static FieldAccessor<String> fieldName = fetchField(type, String.class, 0);
+    private static FieldAccessor<?> fieldPropertyMap = fetchField(type, Reflection.getClass(Type.PROPERTYMAP), 0);
 
     // Decoded data
     public UUID id;
@@ -32,7 +33,7 @@ public class WrappedGameProfile extends Packet {
     }
 
     @Override
-    public void process(ProtocolVersion version) {
+    public void process(Player player, ProtocolVersion version) {
         id = fieldId.get(getPacket());
         name = fieldName.get(getPacket());
         propertyMap = fieldPropertyMap.get(getPacket());

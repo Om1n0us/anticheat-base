@@ -6,17 +6,14 @@ package com.ngxdev.tinyprotocol.api;
 
 import com.ngxdev.tinyprotocol.reflection.FieldAccessor;
 import com.ngxdev.tinyprotocol.reflection.Reflection;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public abstract class Packet {
@@ -58,6 +55,7 @@ public abstract class Packet {
 
         public static final String KEEP_ALIVE = SERVER + "KeepAlive";
         public static final String CHAT = SERVER + "Chat";
+        public static final String POSITION = SERVER + "Position";
         public static final String TRANSACTION = SERVER + "Transaction";
         public static final String NAMED_ENTITY_SPAWN = SERVER + "NamedEntitySpawn";
         public static final String SPAWN_ENTITY_LIVING = SERVER + "SpawnEntityLiving";
@@ -99,6 +97,13 @@ public abstract class Packet {
         return null;
     }
 
+    public static <T> FieldAccessor<T> fetchField(String className, Class<T> fieldType, int index) {
+        return Reflection.getFieldSafe(Reflection.NMS_PREFIX + "." + className, fieldType, index);
+    }
+
+    public Packet(Object packet) {
+        this.packet = packet;
+    }
 
     private Object packet;
     private boolean cancelled;
@@ -108,7 +113,7 @@ public abstract class Packet {
         return name.substring(name.lastIndexOf(".") + 1);
     }
 
-    public void process(ProtocolVersion version) {}
+    public void process(Player player, ProtocolVersion version) {}
 
     public void setPacket(String packet, Object... args) {
         this.packet = construct(packet, args);

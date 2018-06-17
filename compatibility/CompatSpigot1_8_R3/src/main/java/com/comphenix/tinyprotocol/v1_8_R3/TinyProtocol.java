@@ -217,9 +217,6 @@ public abstract class TinyProtocol implements AbstractTinyProtocol {
                 Channel serverChannel = ((ChannelFuture) item).channel();
 
                 serverChannels.add(serverChannel);
-                serverChannel.pipeline().names().forEach(n -> {
-                    System.out.println(n);
-                });
                 serverChannel.pipeline().addFirst(serverChannelHandler);
                 System.out.println("Server channel handler injected (" + serverChannel + ")");
                 looking = false;

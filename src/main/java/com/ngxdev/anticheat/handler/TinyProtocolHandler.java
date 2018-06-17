@@ -4,16 +4,16 @@
 
 package com.ngxdev.anticheat.handler;
 
+import com.ngxdev.anticheat.BasePlugin;
 import com.ngxdev.anticheat.data.PlayerData;
 import com.ngxdev.tinyprotocol.api.AbstractTinyProtocol;
 import com.ngxdev.tinyprotocol.api.Packet;
 import com.ngxdev.tinyprotocol.api.ProtocolVersion;
 import com.ngxdev.tinyprotocol.packet.in.WrappedInFlyingPacket;
+import com.ngxdev.tinyprotocol.packet.out.WrappedOutPosition;
 import com.ngxdev.utils.Init;
 import com.ngxdev.utils.exception.ExceptionLog;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 @Init
 public class TinyProtocolHandler {
@@ -28,9 +28,9 @@ public class TinyProtocolHandler {
         return instance.getProtocolVersion(player);
     }
 
-    public TinyProtocolHandler(Plugin plugin) {
+    public TinyProtocolHandler() {
         TinyProtocolHandler self = this;
-        instance = ProtocolVersion.getGameVersion().isBelow(ProtocolVersion.V1_8) ? new com.comphenix.tinyprotocol.v1_7_R4.TinyProtocol(plugin) {
+        instance = ProtocolVersion.getGameVersion().isBelow(ProtocolVersion.V1_8) ? new com.comphenix.tinyprotocol.v1_7_R4.TinyProtocol(BasePlugin.getInstance()) {
             @Override
             public Object onPacketOutAsync(Player receiver, Object packet) {
                 return self.onPacketOutAsync(receiver, packet);
@@ -40,7 +40,7 @@ public class TinyProtocolHandler {
             public Object onPacketInAsync(Player sender, Object packet) {
                 return self.onPacketInAsync(sender, packet);
             }
-        } : new com.comphenix.tinyprotocol.v1_8_R3.TinyProtocol(plugin) {
+        } : new com.comphenix.tinyprotocol.v1_8_R3.TinyProtocol(BasePlugin.getInstance()) {
             @Override
             public Object onPacketOutAsync(Player receiver, Object packet) {
                 return self.onPacketOutAsync(receiver, packet);
@@ -54,16 +54,20 @@ public class TinyProtocolHandler {
     }
 
     public Object onPacketOutAsync(Player receiver, Object packet) {
+        if (receiver == null) return packet;
         boolean cancel = false;
         String name = packet.getClass().getName();
         int index = name.lastIndexOf(".");
         String packetName = name.substring(index + 1);
         try {
             PlayerData data = PlayerData.get(receiver);
-
             switch (packetName) {
-                default: {
-
+                case Packet.Server.POSITION: {
+                    WrappedOutPosition wrapped = new WrappedOutPosition(packet);
+                    wrapped.process(receiver, data.protocolVersion);
+                    data.fireChecks(wrapped);
+                    cancel = wrapped.isCancelled();
+                    break;
                 }
             }
         } catch (Exception e) {
@@ -73,6 +77,7 @@ public class TinyProtocolHandler {
     }
 
     public Object onPacketInAsync(Player sender, Object packet) {
+        if (sender == null) return packet;
         boolean cancel = false;
         String name = packet.getClass().getName();
         int index = name.lastIndexOf(".");
@@ -89,9 +94,10 @@ public class TinyProtocolHandler {
                 case Packet.Client.LEGACY_POSITION_LOOK:
                 case Packet.Client.FLYING: {
                     WrappedInFlyingPacket wrapped = new WrappedInFlyingPacket(packet);
-                    wrapped.process(data.protocolVersion);
+                    wrapped.process(sender, data.protocolVersion);
                     data.fireChecks(wrapped);
                     cancel = wrapped.isCancelled();
+                    break;
                 }
             }
         } catch (Exception e) {

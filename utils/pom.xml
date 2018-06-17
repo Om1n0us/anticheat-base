@@ -13,16 +13,27 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>spigot</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>bukkit</id>
+            <url>http://repo.bukkit.org/content/groups/public/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>3.3.1</version>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>5.2</version>
         </dependency>
         <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-tree</artifactId>
-            <version>3.3.1</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.7.10-R0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

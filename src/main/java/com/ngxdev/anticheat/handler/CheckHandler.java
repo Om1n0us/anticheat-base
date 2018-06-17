@@ -27,7 +27,9 @@ public class CheckHandler {
         ClassScanner.scanFile(CheckType.class.getName(), getClass()).forEach(c -> {
             try {
                 // Check casts
-                checks.add((Class<? extends Check>) Class.forName(c));
+                Class<? extends Check> clazz = (Class<? extends Check>) Class.forName(c);
+                checks.add(clazz);
+                System.out.println("Registering check: " + clazz.getSimpleName());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -36,7 +38,9 @@ public class CheckHandler {
         ClassScanner.scanFile(NoOpCheck.class.getName(), getClass()).forEach(c -> {
             try {
                 // Check casts
-                parsers.add((Class<? extends Check>) Class.forName(c));
+                Class<? extends Check> clazz = (Class<? extends Check>) Class.forName(c);
+                parsers.add(clazz);
+                System.out.println("Registering parser: " + clazz.getSimpleName());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -57,10 +61,12 @@ public class CheckHandler {
         parsers.forEach(c -> {
             try {
                 Check check = c.newInstance();
+                check.init(data, null);
                 data.checks.add(check);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+        data.sortMethods();
     }
 }

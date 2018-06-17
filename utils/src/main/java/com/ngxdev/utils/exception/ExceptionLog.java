@@ -27,7 +27,7 @@ public class ExceptionLog {
             println("[Exception Registry] Exception logged for the first time:");
             t.printStackTrace();
         } else {
-            if (lastLog.hasPassed(logTimeout)) {
+            if (lastLog.hasPassed(logTimeout, true)) {
                 println("[Exception Registry] Exception logged again:");
                 t.printStackTrace();
             }

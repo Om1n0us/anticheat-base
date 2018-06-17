@@ -26,6 +26,7 @@ public enum ProtocolVersion {
     V1_12  (335, "v1_12_R1"),
     V1_12_1(338, null      ),
     V1_12_2(340, "v1_12_R2"),
+    UNKNOWN(-1 , "UNKNOWN" )
     ;
 
     @Getter
@@ -35,14 +36,14 @@ public enum ProtocolVersion {
         for (ProtocolVersion version : values()) {
             if (version.getServerVersion() != null && version.getServerVersion().equals(Reflection.VERSION)) return version;
         }
-        return null;
+        return UNKNOWN;
     }
 
     public static ProtocolVersion getVersion(int versionId) {
         for (ProtocolVersion version : values()) {
             if (version.getVersion() == versionId) return version;
         }
-        return null;
+        return UNKNOWN;
     }
 
 

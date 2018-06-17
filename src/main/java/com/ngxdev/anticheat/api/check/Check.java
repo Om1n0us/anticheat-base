@@ -10,13 +10,11 @@ import com.ngxdev.anticheat.containers.ViolationData;
 import com.ngxdev.anticheat.data.PlayerData;
 import com.ngxdev.anticheat.handler.TinyProtocolHandler;
 import com.ngxdev.tinyprotocol.api.Packet;
-import com.ngxdev.utils.exception.ExceptionLog;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
 
 @Getter
 public class Check {
@@ -27,56 +25,42 @@ public class Check {
     // Configurable values
     private CheckWrapper check;
 
-    @Setter
-    private Player player;
+    public Player player;
     // To make the code cleaner
     public PlayerData data;
 
     // Handles how violations work, feel free to modify this
     private ViolationData violationData;
 
-    private LinkedList<Method> methods = new LinkedList<>(); // pre, post -> prioritized list
-
     public Check() {
-        Map<Method, Byte> unsorted = new HashMap<>();
-
-        for (Method method : getClass().getMethods()) {
-            byte priority = Byte.MAX_VALUE;
-            if (method.isAnnotationPresent(Priority.class)) {
-                priority = method.getAnnotation(Priority.class).value();
-            }
-            unsorted.put(method, priority);
-        }
-        unsorted.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .forEach(entry -> methods.add(entry.getKey()));
-        if (getClass().isAssignableFrom(CheckType.class)) {
+        if (getClass().isAnnotationPresent(CheckType.class)) {
             CheckType type = getClass().getAnnotation(CheckType.class);
             this.id = type.id();
             this.name = type.name();
             this.experimental = type.experimental();
-            if (isExperimental()) this.name = name + "*";
+            if (isExperimental()) this.name = this.name + "*";
         }
     }
 
-    // Just so we don't have to use reflection & private feels are kept hidden.
     public void init(PlayerData data, CheckWrapper wrapper) {
         this.player = data.player;
         this.data = data;
         this.check = wrapper;
         this.violationData = new ViolationData(data);
+
+        initMethods();
     }
 
-    public void call(Object argument) {
-        methods.forEach(m -> {
-            if (m.getParameterTypes()[0] == argument.getClass()) {
-                try {
-                    m.invoke(this, argument);
-                } catch (Exception e) {
-                    ExceptionLog.log(e);
-                }
+    private void initMethods() {
+        for (Method method : getClass().getDeclaredMethods()) {
+            if (Arrays.asList("wait").contains(method.getName()) || method.getName().contains("lambda") || method.getParameterCount() != 1) continue;
+            byte priority = Byte.MAX_VALUE;
+            if (method.isAnnotationPresent(Priority.class)) {
+                priority = method.getAnnotation(Priority.class).value();
             }
-        });
+            method.setAccessible(true);
+            data.methods.add(new MethodWrapper(this, method, priority));
+        }
     }
 
     /**
@@ -84,7 +68,7 @@ public class Check {
      * @param args  - Formatter args, "%s there" with arg "hello" will return "hello there"
      */
     public void debug(String extra, Object... args) {
-        if (data.debug.check == this) {
+        if (data.debug.check == this || true) {
             player.sendMessage(BasePlugin.getPrefix() + " §f" + name + " §8/ §f" + String.format(extra, args));
         }
     }
@@ -113,10 +97,10 @@ public class Check {
     public boolean fail(int violations, int violationTimeout, String extra, Object... args) {
         double vls = (double) violationData.getViolation(violationTimeout) / (double) violations;
         // Declared as fields for special occasions that would make it not be required to be alerted (generic lag check for example)
-            boolean shouldAlert = check.alert();
-            if (shouldAlert && vls >= check.alertSensitivity()) {
-                player.sendMessage(BasePlugin.getPrefix() + " §f" + name + " §8/ §f" + String.format(extra, args));
-            }
+        boolean shouldAlert = check.alert();
+        if (shouldAlert && vls >= check.alertSensitivity()) {
+            player.sendMessage(BasePlugin.getPrefix() + " §f" + name + " §8/ §f" + String.format(extra, args));
+        }
         return false;
     }
 

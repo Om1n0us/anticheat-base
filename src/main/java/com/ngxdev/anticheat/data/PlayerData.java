@@ -5,25 +5,28 @@
 package com.ngxdev.anticheat.data;
 
 import com.ngxdev.anticheat.api.check.Check;
+import com.ngxdev.anticheat.api.check.MethodWrapper;
 import com.ngxdev.anticheat.handler.TinyProtocolHandler;
 import com.ngxdev.anticheat.utils.PlayerTimer;
 import com.ngxdev.tinyprotocol.api.ProtocolVersion;
+import com.ngxdev.utils.exception.ExceptionLog;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 // Note, the only reason these don't have getters and setters to make the code cleaner in checks
 public class PlayerData {
-    @NonNull public Player player;
+    @NonNull
+    public Player player;
+
     public int currentTick = 0;
-    public List<Check> checks = new ArrayList<>();
     public ProtocolVersion protocolVersion;
+
+    public List<Check> checks = new ArrayList<>();
+    public LinkedList<MethodWrapper> methods = new LinkedList<>();
+
 
     public PlayerData(Player player) {
         this.player = player;
@@ -55,6 +58,8 @@ public class PlayerData {
 
     public class Timers {
         public PlayerTimer lastJump;
+        public PlayerTimer lastTeleport;
+        public PlayerTimer inUnloadedChunks;
     }
 
     public class Debug {
@@ -82,7 +87,22 @@ public class PlayerData {
         return playerData.values();
     }
 
+    public void sortMethods() {
+        LinkedList<MethodWrapper> sorted = new LinkedList<>();
+        methods.stream()
+                .sorted(Comparator.comparingInt(MethodWrapper::getPriority))
+                .forEach(sorted::add);
+        methods = sorted;
+    }
+
     public void fireChecks(Object argument) {
-        checks.forEach(c -> c.call(argument));
+        methods.forEach(m -> {
+            try {
+                m.call(argument);
+            } catch (Exception e) {
+                //System.out.println("Failed to call " + m.getMethod().getName());
+                ExceptionLog.log(e);
+            }
+        });
     }
 }

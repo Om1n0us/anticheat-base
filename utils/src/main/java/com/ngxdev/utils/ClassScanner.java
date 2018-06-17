@@ -133,18 +133,22 @@ public class ClassScanner {
     }
 
     public static String findPlugin(String file, InputStream in) throws IOException {
-        ClassReader reader = new ClassReader(in);
-        ClassNode classNode = new ClassNode();
-        reader.accept(classNode, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-        String className = classNode.name.replace('/', '.');
-        if (classNode.visibleAnnotations != null) {
-            for (Object node : classNode.visibleAnnotations) {
-                AnnotationNode annotation = (AnnotationNode) node;
-                if (annotation.desc.equals("L" + Init.class.getName().replace(".", "/") + ";")
-                        || annotation.desc.equals("L" + file.replace(".", "/") + ";")) return className;
+        try {
+            ClassReader reader = new ClassReader(in);
+            ClassNode classNode = new ClassNode();
+            reader.accept(classNode, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+            String className = classNode.name.replace('/', '.');
+            if (classNode.visibleAnnotations != null) {
+                for (Object node : classNode.visibleAnnotations) {
+                    AnnotationNode annotation = (AnnotationNode) node;
+                    if ((file == null && annotation.desc.equals("L" + Init.class.getName().replace(".", "/") + ";"))
+                            || (file != null && annotation.desc.equals("L" + file.replace(".", "/") + ";"))) return className;
+                }
             }
+            if (classNode.superName != null && (classNode.superName.equals(file))) return className;
+        } catch (Exception e) {
+            //System.out.println("Failed to scan: " + in.toString());
         }
-        if (classNode.superName != null && (classNode.superName.equals(file))) return className;
         return null;
     }
 

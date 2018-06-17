@@ -9,18 +9,19 @@ import com.ngxdev.tinyprotocol.api.ProtocolVersion;
 import com.ngxdev.tinyprotocol.reflection.FieldAccessor;
 import com.ngxdev.tinyprotocol.reflection.Reflection;
 import lombok.Getter;
+import org.bukkit.entity.Player;
 
 @Getter
 public class WrappedInFlyingPacket extends Packet {
     private static final String packet = Client.FLYING;
 
     // Fields
-    private static FieldAccessor<Double> fieldX = Reflection.getFieldSafe(packet, double.class, 0);
-    private static FieldAccessor<Double> fieldY = Reflection.getFieldSafe(packet, double.class, 1);
-    private static FieldAccessor<Double> fieldZ = Reflection.getFieldSafe(packet, double.class, 2);
-    private static FieldAccessor<Float> fieldYaw = Reflection.getFieldSafe(packet, float.class, 0);
-    private static FieldAccessor<Float> fieldPitch = Reflection.getFieldSafe(packet, float.class, 1);
-    private static FieldAccessor<Boolean> fieldGround = Reflection.getFieldSafe(packet, boolean.class, 0);
+    private static FieldAccessor<Double> fieldX = fetchField(packet, double.class, 0);
+    private static FieldAccessor<Double> fieldY = fetchField(packet, double.class, 1);
+    private static FieldAccessor<Double> fieldZ = fetchField(packet, double.class, 2);
+    private static FieldAccessor<Float> fieldYaw = fetchField(packet, float.class, 0);
+    private static FieldAccessor<Float> fieldPitch = fetchField(packet, float.class, 1);
+    private static FieldAccessor<Boolean> fieldGround = fetchField(packet, boolean.class, 0);
 
     // Decoded data
     private double x, y, z;
@@ -32,7 +33,7 @@ public class WrappedInFlyingPacket extends Packet {
     }
 
     @Override
-    public void process(ProtocolVersion version) {
+    public void process(Player player, ProtocolVersion version) {
         String name = getPacketName();
         // This saves up 2 reflection calls
         if (version.isBelow(ProtocolVersion.V1_8)) {

@@ -16,6 +16,8 @@ public @interface CheckType {
 
     String name();
 
+    Type type();
+
     int timeout() default 1;
 
     int maxVl() default 1;
@@ -27,4 +29,12 @@ public @interface CheckType {
     boolean cancel() default true;
 
     boolean ban() default true;
+
+    enum Type {
+        COMBAT,
+        MOVEMENT,
+        CONNECTION,
+        WORLD,
+        EXPLOIT
+    }
 }
