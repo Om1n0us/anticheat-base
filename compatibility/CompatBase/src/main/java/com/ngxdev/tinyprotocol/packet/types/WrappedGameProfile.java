@@ -4,18 +4,17 @@
 
 package com.ngxdev.tinyprotocol.packet.types;
 
-import com.ngxdev.tinyprotocol.api.Packet;
+import com.ngxdev.tinyprotocol.api.NMSObject;
 import com.ngxdev.tinyprotocol.api.ProtocolVersion;
 import com.ngxdev.tinyprotocol.reflection.FieldAccessor;
 import com.ngxdev.tinyprotocol.reflection.Reflection;
-import jdk.nashorn.internal.runtime.PropertyMap;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 @Getter
-public class WrappedGameProfile extends Packet {
+public class WrappedGameProfile extends NMSObject {
     private static final String type = Type.GAMEPROFILE;
 
     // Fields
@@ -34,8 +33,8 @@ public class WrappedGameProfile extends Packet {
 
     @Override
     public void process(Player player, ProtocolVersion version) {
-        id = fieldId.get(getPacket());
-        name = fieldName.get(getPacket());
-        propertyMap = fieldPropertyMap.get(getPacket());
+        id = fieldId.get(getObject());
+        name = fieldName.get(getObject());
+        propertyMap = fieldPropertyMap.get(getObject());
     }
 }

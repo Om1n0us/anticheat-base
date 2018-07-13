@@ -4,16 +4,14 @@
 
 package com.ngxdev.tinyprotocol.packet.out;
 
-import com.ngxdev.tinyprotocol.api.Packet;
+import com.ngxdev.tinyprotocol.api.NMSObject;
 import com.ngxdev.tinyprotocol.api.ProtocolVersion;
 import com.ngxdev.tinyprotocol.packet.types.WrappedGameProfile;
 import com.ngxdev.utils.MathUtils;
 
-import java.util.UUID;
-
 //TODO make this cleaner
-public class WrappedOutNamedEntitySpawn extends Packet {
-    private static final String packet = Packet.Server.NAMED_ENTITY_SPAWN;
+public class WrappedOutNamedEntitySpawn extends NMSObject {
+    private static final String packet = NMSObject.Server.NAMED_ENTITY_SPAWN;
 
     public WrappedOutNamedEntitySpawn(ProtocolVersion version, int id, Object gameProfile, double x, double y, double z, Object dataWatcher, Object watchables) {
         if (version.isBelow(ProtocolVersion.V1_8)) {

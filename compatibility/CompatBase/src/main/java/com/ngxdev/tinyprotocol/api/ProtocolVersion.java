@@ -50,11 +50,15 @@ public enum ProtocolVersion {
     private int version;
     private String serverVersion;
 
+
     public boolean isBelow(ProtocolVersion version) {
         return this.getVersion() < version.getVersion();
     }
 
     public boolean isAbove(ProtocolVersion version) {
         return this.getVersion() > version.getVersion();
+    }
+    public boolean isOrAbove(ProtocolVersion version) {
+        return this.getVersion() >= version.getVersion();
     }
 }

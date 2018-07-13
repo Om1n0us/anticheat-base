@@ -4,15 +4,14 @@
 
 package com.ngxdev.tinyprotocol.packet.in;
 
-import com.ngxdev.tinyprotocol.api.Packet;
+import com.ngxdev.tinyprotocol.api.NMSObject;
 import com.ngxdev.tinyprotocol.api.ProtocolVersion;
 import com.ngxdev.tinyprotocol.reflection.FieldAccessor;
-import com.ngxdev.tinyprotocol.reflection.Reflection;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
 @Getter
-public class WrappedInFlyingPacket extends Packet {
+public class WrappedInFlyingPacket extends NMSObject {
     private static final String packet = Client.FLYING;
 
     // Fields
@@ -36,18 +35,22 @@ public class WrappedInFlyingPacket extends Packet {
     public void process(Player player, ProtocolVersion version) {
         String name = getPacketName();
         // This saves up 2 reflection calls
-        if (version.isBelow(ProtocolVersion.V1_8)) {
+        if (ProtocolVersion.getGameVersion().isBelow(ProtocolVersion.V1_8)) {
             pos = name.equals(Client.LEGACY_POSITION) || name.equals(Client.LEGACY_POSITION_LOOK);
             look = name.equals(Client.LEGACY_LOOK) || name.equals(Client.LEGACY_POSITION_LOOK);
         } else {
             pos = name.equals(Client.POSITION) || name.equals(Client.POSITION_LOOK);
             look = name.equals(Client.LOOK) || name.equals(Client.POSITION_LOOK);
         }
-        x = fetch(fieldX);
-        y = fetch(fieldY);
-        z = fetch(fieldZ);
-        yaw = fetch(fieldYaw);
-        pitch = fetch(fieldPitch);
+        if (pos) {
+            x = fetch(fieldX);
+            y = fetch(fieldY);
+            z = fetch(fieldZ);
+        }
+        if (look) {
+            yaw = fetch(fieldYaw);
+            pitch = fetch(fieldPitch);
+        }
         ground = fetch(fieldGround);
     }
 }
